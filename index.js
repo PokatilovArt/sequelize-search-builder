@@ -5,4 +5,8 @@
  * MIT Licensed
  */
 
-module.exports = require('./src/search-builder');
+module.exports = {
+    SearchBuilder: require('./src/search-builder'),
+    WhereBuilder: require('./src/where-builder'),
+    OrderBuilder: require('./src/order-builder')
+}
