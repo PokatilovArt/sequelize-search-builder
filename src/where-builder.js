@@ -6,21 +6,31 @@ const allowedConditionsArray = ['between', 'notBetween', 'in', 'notIn'];
 
 class WhereBuilder extends BuilderAbstract {
   getQuery() {
-    const { request } = this;
-    const query = {};
+    const { request, entityFields } = this;
+    const checkEntityFields = entityFields.length > 0;
+    let query = {};
 
-    Object.keys(request).forEach((key) => {
-      const fieldValue = request[key];
-      const fieldKey = helper.getFieldKey(key);
+    try {
+      Object.keys(request).forEach((key) => {
+        const fieldValue = request[key];
+        const fieldKey = helper.getFieldKey(key);
 
-      if (helper.isComparableField(fieldKey)) {
-        if (Array.isArray(fieldValue) || typeof fieldValue === 'string') {
-          Object.assign(query, helper.getEqualOp(fieldKey, fieldValue));
-        } else if (typeof fieldValue === 'object') {
-          Object.assign(query, this._getFieldQuery(fieldKey, fieldValue));
+        if (helper.isComparableField(fieldKey)) {
+          if (checkEntityFields && entityFields.indexOf(fieldKey) === -1) {
+            throw Error("Field '" + fieldKey + "' doesn't exist in entity fields.");
+          }
+
+          if (Array.isArray(fieldValue) || typeof fieldValue === 'string') {
+            Object.assign(query, helper.getEqualOp(fieldKey, fieldValue));
+          } else if (typeof fieldValue === 'object') {
+            Object.assign(query, this._getFieldQuery(fieldKey, fieldValue));
+          }
         }
-      }
-    });
+      });
+    }
+    catch (e) {
+      query = {};
+    }
 
     return this._getConditionQuery(query, request);
   }

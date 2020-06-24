@@ -9,14 +9,16 @@ class BuilderAbstract {
   /**
    * @param {Object} Sequelize
    * @param {(Object|string)} request
+   * @param {(Array<string>)} entityFields
    */
-  constructor(Sequelize, request = {}) {
+  constructor(Sequelize, request = {}, entityFields = []) {
     if (new.target === BuilderAbstract) {
       throw new TypeError('Cannot construct BuilderAbstract instances directly');
     }
 
     this.Sequelize = Sequelize;
     this.request = BuilderAbstract.prepareRequest(request);
+    this.entityFields = entityFields;
     this.setConfig(config);
   }
 
